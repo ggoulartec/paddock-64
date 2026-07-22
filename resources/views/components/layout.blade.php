@@ -10,7 +10,11 @@
     <!-- Styles / Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
-{{ $slots }}
+<body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] dark:text-white flex items-center min-h-screen flex-col">
+<x-header/>
+<main class="min-w-[1200px] flex flex-col min-h-auto m-10">
+    {{$slot}}
+</main>
+<x-footer/>
 </body>
 </html>
