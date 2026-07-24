@@ -1,59 +1,86 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Paddock 64 — Web (Laravel + Blade)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Versão web multi-página do Paddock64, usando Laravel + Blade, com o mesmo
+layout, cores, fontes e componentes do mockup original. Leilão e Sorteio
+já funcionam de verdade (via sessão do navegador, sem banco de dados ainda)
+— dar um lance ou sortear realmente atualiza a página.
 
-## About Laravel
+## Este zip NÃO é um projeto Laravel completo
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Ele contém só os arquivos específicos do Paddock64 (rotas, controllers,
+views, CSS). O "esqueleto" do Laravel (vendor/, .env, artisan, bootstrap/,
+etc.) é gerado pelo Composer — é mais seguro deixar o Composer criar essa
+parte do que eu recriar à mão.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Como instalar
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Pré-requisitos: **PHP 8.2+** e **Composer** instalados.
 
-## Learning Laravel
+```bash
+# 1. Cria um projeto Laravel novo e limpo
+composer create-project laravel/laravel paddock64-web
+cd paddock64-web
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+# 2. Extrai este zip e copia os arquivos por cima da pasta do projeto,
+#    substituindo quando perguntado (routes/web.php, config, etc.)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# 3. Sobe o servidor
+php artisan serve
+```
 
-## Laravel Sponsors
+Abre **http://127.0.0.1:8000** no navegador.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Se aparecer erro de "APP_KEY não definida", roda:
+```bash
+php artisan key:generate
+```
+(normalmente o `create-project` já faz isso sozinho.)
 
-### Premium Partners
+## O que copiar do zip pra dentro do projeto Laravel
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```
+paddock64-web/          (conteúdo deste zip)
+├── app/Http/Controllers/*.php   → cole em app/Http/Controllers/
+├── config/paddock.php            → cole em config/
+├── routes/web.php                → substitui routes/web.php
+├── resources/views/**            → cole em resources/views/
+└── public/css/app.css            → cole em public/css/
+    public/js/app.js              → cole em public/js/
+```
 
-## Contributing
+## Estrutura de rotas
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Rota | Página |
+|---|---|
+| `GET /` | Vitrine (com filtro `?cat=`) |
+| `GET /item/{id}` | Detalhe do item |
+| `GET /leiloes` | Lista de leilões |
+| `GET /leiloes/{id}` | Detalhe do leilão |
+| `POST /leiloes/{id}/lance` | Dar lance (grava na sessão) |
+| `GET /sorteios` | Lista de sorteios |
+| `GET /sorteios/{id}` | Detalhe do sorteio |
+| `POST /sorteios/{id}/sortear` | Sortear um participante (grava na sessão) |
+| `GET /comunidade` | Feed |
+| `GET /chat` | Lista de conversas |
+| `GET /chat/{id}` | Conversa |
+| `POST /chat/{id}/mensagem` | Enviar mensagem (grava na sessão) |
 
-## Code of Conduct
+## O que já funciona de verdade
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Filtro de categoria na vitrine (via query string, sem JS)
+- Dar lance no leilão → some no histórico e atualiza o "lance atual" (persistido na sessão, então sobrevive a um refresh — mas é por navegador, não é banco de dados compartilhado ainda)
+- Sortear no sorteio → sorteio real em PHP (`array_rand`), resultado fica marcado
+- Enviar mensagem no chat → aparece na conversa
 
-## Security Vulnerabilities
+## Próximo passo natural: banco de dados
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Hoje os dados vêm de `config/paddock.php` (array fixo) e as ações usam
+`session()` como "banco de dados fake". Pra virar produto de verdade, o
+próximo passo é trocar isso por:
 
-## License
+1. **Migrations + Models** (Eloquent) para `products`, `auctions`, `bids`, `raffles`, `messages`, `posts`
+2. **Autenticação** (`laravel/breeze` ou `laravel/fortify`) pra ter usuários de verdade em vez de "Você" fixo
+3. Mover o `SESSION_DRIVER` de `file` pra `database` ou `redis` em produção
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Posso montar isso a seguir, ou prefere primeiro rodar essa versão localmente
+e conferir se o layout ficou como esperado?
